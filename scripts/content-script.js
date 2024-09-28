@@ -26,7 +26,8 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
 });
 //-----------------------------------------------------------------------------
 function RemoveBlock() {
-  // console.log(`${EXT_NAME}: in RemoveBlock()`);
+  const funcName = "RemoveBlock()";
+  
   const ads = getElementsByTextContent(OBSERVE_NODE, ADS_TEXT, "span");
 
   ads.forEach((item) => {
@@ -34,7 +35,7 @@ function RemoveBlock() {
     if (adBlock) {
       // @ts-ignore
       adBlock.style.display = "none";
-      console.log(`${CONTENT_EXTENSION_NAME}: found and removed vk ad post`);
+      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post`);
     }
   });
 }
@@ -42,33 +43,24 @@ function RemoveBlock() {
 function RemoveAdBlock() {
   const funcName = "RemoveAdBlock()";
   
-  let ads = getElementsByClassName(OBSERVE_NODE, ADS_CLASS, "div");
+  const ads = [
+    ...getElementsByClassName(OBSERVE_NODE, ADS_CLASS, "div"),
+    ...getElementsContainingClassName(OBSERVE_NODE, ADS_CLASS_CONTAINS, "div")
+  ];
 
   ads.forEach((item) => {
     let adBlock = item.closest("div.feed_row ");
     if (adBlock) {
       // @ts-ignore
       adBlock.style.display = "none";
-      console.log(`${CONTENT_EXTENSION_NAME}: found and removed vk ad post`);
+      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post`);
     }
   });
-
-  /** временно, чтоб проверить эффективность работу */
-  ads = getElementsContainingClassName(OBSERVE_NODE, ADS_CLASS_CONTAINS, "div");
-
-  ads.forEach((item) => {
-    let adBlock = item.closest("div.feed_row ");
-    if (adBlock) {
-      // @ts-ignore
-      adBlock.style.display = "none";
-      console.log(`${CONTENT_EXTENSION_NAME}: found and removed vk ad post _ads_ `);
-    }
-  });
-
 }
 //-----------------------------------------------------------------------------
 function RemoveAdInPublicBlock() {
   const funcName = "RemoveAdInPublicBlock()";
+
   const ads = getElementsByClassName(OBSERVE_NODE, ADS_IN_PUBLIC, "span");
 
   ads.forEach((item) => {
@@ -77,14 +69,17 @@ function RemoveAdInPublicBlock() {
       // @ts-ignore
       adBlock.style.display = "none";
       console.log(
-        `${CONTENT_EXTENSION_NAME}: found and removed ad in public post`
+        `${CONTENT_EXTENSION_NAME}: removed ad in public post`
       );
     }
   });
 }
 //-----------------------------------------------------------------------------
 function RemoveComments() {
+  const funcName = "RemoveСomments()";
+
   const repliesDivs = getElementsByClassName(OBSERVE_NODE, REPLIES_TEXT, "div");
+  
   repliesDivs.forEach((div) => (div.style.display = "none"));
 }
 //-----------------------------------------------------------------------------

@@ -12,7 +12,6 @@ const DISABLED_CLASS = "btn__disabled";
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById(BUTTON_ID);
 
-  /** поклон в сторону TypeScript */
   if (toggleButton == null) return;
 
   chrome.storage.local.get(POPUP_EXT_STORAGE_KEY, (result) => {
