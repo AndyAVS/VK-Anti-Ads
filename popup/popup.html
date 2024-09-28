@@ -1,0 +1,41 @@
+<!-- popup.html -->
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vk-Anti-Ads</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 1rem;
+            width: 15rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn__enabled {
+            background-color: rgb(0, 121, 24);
+            color: #ffffff;
+        }
+
+        .btn__disabled {
+            background-color: rgb(150, 0, 0);
+            color: #f5e400;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Очищает ленту ВК от рекламы и тупых комментов</p>
+    <button id="toggle-btn" class="btn__disabled">Unknown</button>
+    <script type="module" src="./popup.js"></script>
+</body>
+
+</html>
