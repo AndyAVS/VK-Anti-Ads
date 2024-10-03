@@ -49,10 +49,11 @@ function RemoveAdBlock() {
   ];
 
   ads.forEach((item) => {
-    let adBlock = item.closest("div.feed_row ");
+    const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
       // @ts-ignore
-      adBlock.style.display = "none";
+      // adBlock.style.display = "none";
+      adBlock.remove();
       console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post`);
     }
   });
@@ -64,10 +65,11 @@ function RemoveAdInPublicBlock() {
   const ads = getElementsByClassName(OBSERVE_NODE, ADS_IN_PUBLIC, "span");
 
   ads.forEach((item) => {
-    let adBlock = item.closest("div.feed_row ");
+    const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
       // @ts-ignore
-      adBlock.style.display = "none";
+      // adBlock.style.display = "none";
+      adBlock.remove();
       console.log(
         `${CONTENT_EXTENSION_NAME}: removed ad in public post`
       );
@@ -80,7 +82,7 @@ function RemoveComments() {
 
   const repliesDivs = getElementsByClassName(OBSERVE_NODE, REPLIES_TEXT, "div");
   
-  repliesDivs.forEach((div) => (div.style.display = "none"));
+  repliesDivs.forEach((div) => (div.remove()));
 }
 //-----------------------------------------------------------------------------
 /**
