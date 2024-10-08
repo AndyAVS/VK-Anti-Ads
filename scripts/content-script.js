@@ -16,6 +16,7 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
     console.log(`${CONTENT_EXTENSION_NAME} запущено во включенном состоянии`);
 
     new MutationObserver(() => {
+      TestRemoveBlock();
       RemoveAdBlock();
       RemoveAdInPublicBlock();
       RemoveComments();
@@ -25,34 +26,34 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
   }
 });
 //-----------------------------------------------------------------------------
-function RemoveBlock() {
+function TestRemoveBlock() {
   const funcName = "RemoveBlock()";
-  
-  const ads = getElementsByTextContent(OBSERVE_NODE, ADS_TEXT, "span");
+
+  const ads = [
+    ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "span"),
+    ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "div"),
+  ];
 
   ads.forEach((item) => {
     const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
-      // @ts-ignore
-      adBlock.style.display = "none";
-      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post`);
+      adBlock.remove();
+      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post test func`);
     }
   });
 }
 //-----------------------------------------------------------------------------
 function RemoveAdBlock() {
   const funcName = "RemoveAdBlock()";
-  
+
   const ads = [
     ...getElementsByClassName(OBSERVE_NODE, ADS_CLASS, "div"),
-    ...getElementsContainingClassName(OBSERVE_NODE, ADS_CLASS_CONTAINS, "div")
+    ...getElementsContainingClassName(OBSERVE_NODE, ADS_CLASS_CONTAINS, "div"),
   ];
 
   ads.forEach((item) => {
     const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
-      // @ts-ignore
-      // adBlock.style.display = "none";
       adBlock.remove();
       console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post`);
     }
@@ -67,22 +68,16 @@ function RemoveAdInPublicBlock() {
   ads.forEach((item) => {
     const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
-      // @ts-ignore
-      // adBlock.style.display = "none";
       adBlock.remove();
-      console.log(
-        `${CONTENT_EXTENSION_NAME}: removed ad in public post`
-      );
+      console.log(`${CONTENT_EXTENSION_NAME}: removed ad in public post`);
     }
   });
 }
 //-----------------------------------------------------------------------------
 function RemoveComments() {
-  const funcName = "RemoveСomments()";
-
-  const repliesDivs = getElementsByClassName(OBSERVE_NODE, REPLIES_TEXT, "div");
-  
-  repliesDivs.forEach((div) => (div.remove()));
+  const funcName = "RemoveComments()";
+  const replies = getElementsByClassName(OBSERVE_NODE, REPLIES_TEXT, "div");
+  replies.forEach((div) => div.remove());
 }
 //-----------------------------------------------------------------------------
 /**
@@ -95,6 +90,19 @@ function getElementsByTextContent(startNode, strText, tag) {
   return Array.prototype.filter.call(
     startNode.getElementsByTagName(tag),
     (element) => element.textContent.trim() === strText.trim()
+  );
+}
+//-----------------------------------------------------------------------------
+/**
+ * @param {HTMLElement | Document} startNode
+ * @param {string} strText
+ * @param {string} tag
+ * @returns {HTMLElement[]}
+ */
+function getElementsContainingTextContent(startNode, strText, tag) {
+  return Array.prototype.filter.call(
+    startNode.getElementsByTagName(tag),
+    (element) => element.textContent.includes(strText.trim())
   );
 }
 //-----------------------------------------------------------------------------
@@ -118,7 +126,6 @@ function getElementsByClassName(startNode, className, tag) {
  * @returns {HTMLElement[]}
  */
 function getElementsContainingClassName(startNode, classText, tag) {
-  
   return Array.prototype.filter.call(
     startNode.querySelectorAll(tag),
     (element) =>
