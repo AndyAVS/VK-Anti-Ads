@@ -9,6 +9,7 @@ const ADS_TEXT = "Реклама";
 const REPLIES_TEXT = "replies";
 const ADS_CLASS = "PostHeaderSubtitle--layoutWithWarning";
 const ADS_CLASS_CONTAINS = "_ads_";
+const MARKET_CLASS_CONTAINS = "MarketItems";
 const ADS_IN_PUBLIC = "PostHeaderSubtitle__item";
 //-----------------------------------------------------------------------------
 chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
@@ -29,18 +30,30 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
 function TestRemoveBlock() {
   const funcName = "RemoveBlock()";
 
-  const ads = [
+  let ads = [
     ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "span"),
-    ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "div"),
   ];
 
   ads.forEach((item) => {
     const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
       adBlock.remove();
-      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post test func`);
+      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 1)`);
     }
   });
+  
+  ads = [
+      ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "div"),
+  ];
+
+  ads.forEach((item) => {
+    const adBlock = item.closest("div.feed_row ");
+    if (adBlock) {
+      adBlock.remove();
+      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 2)`);
+    }
+  });
+
 }
 //-----------------------------------------------------------------------------
 function RemoveAdBlock() {
@@ -49,6 +62,7 @@ function RemoveAdBlock() {
   const ads = [
     ...getElementsByClassName(OBSERVE_NODE, ADS_CLASS, "div"),
     ...getElementsContainingClassName(OBSERVE_NODE, ADS_CLASS_CONTAINS, "div"),
+    ...getElementsContainingClassName(OBSERVE_NODE, MARKET_CLASS_CONTAINS, "div"),
   ];
 
   ads.forEach((item) => {
