@@ -12,6 +12,9 @@ const ADS_CLASS_CONTAINS = "_ads_";
 const MARKET_CLASS_CONTAINS = "MarketItems";
 const ADS_IN_PUBLIC = "PostHeaderSubtitle__item";
 //-----------------------------------------------------------------------------
+let adsRemoved = 0;
+let testAdsRemoved = 0;
+//-----------------------------------------------------------------------------
 chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
   if (result.extensionEnabled) {
     console.log(`${CONTENT_EXTENSION_NAME} запущено во включенном состоянии`);
@@ -29,40 +32,51 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
 //-----------------------------------------------------------------------------
 function TestRemoveBlock() {
   const funcName = "RemoveBlock()";
+  const prevBlocked = testAdsRemoved;
 
-  let ads = [
-    ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "span"),
-  ];
-
-  ads.forEach((item) => {
-    const adBlock = item.closest("div.feed_row ");
-    if (adBlock) {
-      adBlock.remove();
-      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 1)`);
-    }
-  });
-  
-  ads = [
-      ...getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "div"),
-  ];
+  let ads = getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "span");
 
   ads.forEach((item) => {
     const adBlock = item.closest("div.feed_row ");
     if (adBlock) {
       adBlock.remove();
-      console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 2)`);
+      console.log(
+        `${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 1)`
+      );
+      testAdsRemoved++;
     }
   });
 
+  ads = getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "div");
+
+  ads.forEach((item) => {
+    const adBlock = item.closest("div.feed_row ");
+    if (adBlock) {
+      adBlock.remove();
+      console.log(
+        `${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 2)`
+      );
+      testAdsRemoved++;
+    }
+  });
+
+  if (prevBlocked !== testAdsRemoved) {
+    chrome.runtime.sendMessage({ testAdsRemoved });
+  }
 }
 //-----------------------------------------------------------------------------
 function RemoveAdBlock() {
   const funcName = "RemoveAdBlock()";
+  const prevBlocked = adsRemoved;
 
   const ads = [
     ...getElementsByClassName(OBSERVE_NODE, ADS_CLASS, "div"),
     ...getElementsContainingClassName(OBSERVE_NODE, ADS_CLASS_CONTAINS, "div"),
-    ...getElementsContainingClassName(OBSERVE_NODE, MARKET_CLASS_CONTAINS, "div"),
+    ...getElementsContainingClassName(
+      OBSERVE_NODE,
+      MARKET_CLASS_CONTAINS,
+      "div"
+    ),
   ];
 
   ads.forEach((item) => {
@@ -70,12 +84,18 @@ function RemoveAdBlock() {
     if (adBlock) {
       adBlock.remove();
       console.log(`${CONTENT_EXTENSION_NAME}: removed vk ad post`);
+      adsRemoved++;
     }
   });
+
+  if (prevBlocked !== adsRemoved) {
+    chrome.runtime.sendMessage({ adsRemoved });
+  }
 }
 //-----------------------------------------------------------------------------
 function RemoveAdInPublicBlock() {
   const funcName = "RemoveAdInPublicBlock()";
+  const prevBlocked = adsRemoved;
 
   const ads = getElementsByClassName(OBSERVE_NODE, ADS_IN_PUBLIC, "span");
 
@@ -84,8 +104,13 @@ function RemoveAdInPublicBlock() {
     if (adBlock) {
       adBlock.remove();
       console.log(`${CONTENT_EXTENSION_NAME}: removed ad in public post`);
+      adsRemoved++;
     }
   });
+
+  if (prevBlocked !== adsRemoved) {
+    chrome.runtime.sendMessage({ adsRemoved });
+  }
 }
 //-----------------------------------------------------------------------------
 function RemoveComments() {

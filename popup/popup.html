@@ -29,12 +29,48 @@
             background-color: rgb(150, 0, 0);
             color: #f5e400;
         }
+
+        .ads-removed-block {
+            display: flex;
+            padding-top: 1rem;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .ads-removed {
+            display: flex;
+        }
+
+        .ads-removed-column {
+            flex: 1;
+            /* border: 1px solid black; */
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            text-align: center;
+        }
+        .ads-removed-column:first-child {
+            flex: 3;
+        }
+        .ads-removed-column:last-child {
+            flex: 1;
+            font-weight: bolder;
+        }
     </style>
 </head>
 
 <body>
     <p>Очищает ленту ВК от рекламы и тупых комментов</p>
-    <button id="toggle-btn" class="btn__disabled">Unknown</button>
+    <button id="toggle-btn" class="btn__disabled">Error :( </button>
+    <div class="ads-removed-block">
+        <div class="ads-removed">
+            <div class="ads-removed-column">ads posts removed:</div>
+            <div id="ads-removed-counter" class="ads-removed-column">0</div>
+        </div>
+        <div class="ads-removed">
+            <div class="ads-removed-column">(test) posts removed:</div>
+            <div id="test-ads-removed-counter" class="ads-removed-column">0</div>
+        </div>
+    </div>
     <script type="module" src="./popup.js"></script>
 </body>
 
