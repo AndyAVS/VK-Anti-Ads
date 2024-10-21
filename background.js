@@ -2,7 +2,7 @@
 // @ts-check
 "use strict";
 
-let totalAdsRemoved = 0;
+let totalAdsRemoved =  0;
 let totalTestAdsRemoved = 0;
 
 chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
@@ -41,5 +41,4 @@ chrome.runtime.onConnect.addListener((port) => {
       });
     }
   });
-  /** */
 });

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VK Anti Ads & Comments ",
-  "version": "0.2.0.519",
+  "version": "0.2.0.605",
   "description": "Очищает ленту ВК от рекламы и тупых комментов",
   "permissions": ["storage", "activeTab"],
   "action": {
