@@ -12,9 +12,6 @@ const ADS_CLASS_CONTAINS = "_ads_";
 const MARKET_CLASS_CONTAINS = "MarketItems";
 const ADS_IN_PUBLIC = "PostHeaderSubtitle__item";
 //-----------------------------------------------------------------------------
-let adsRemoved = 0;
-let testAdsRemoved = 0;
-//-----------------------------------------------------------------------------
 chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
   if (result.extensionEnabled) {
     console.log(`${CONTENT_EXTENSION_NAME} запущено во включенном состоянии`);
@@ -32,7 +29,7 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
 //-----------------------------------------------------------------------------
 function TestRemoveBlock() {
   const funcName = "RemoveBlock()";
-  const prevBlocked = testAdsRemoved;
+  let adsRemoved = 0;
 
   let ads = getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "span");
 
@@ -43,7 +40,7 @@ function TestRemoveBlock() {
       console.log(
         `${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 1)`
       );
-      testAdsRemoved++;
+      adsRemoved++;
     }
   });
 
@@ -56,18 +53,25 @@ function TestRemoveBlock() {
       console.log(
         `${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 2)`
       );
-      testAdsRemoved++;
+      adsRemoved++;
     }
   });
 
-  if (prevBlocked !== testAdsRemoved) {
-    chrome.runtime.sendMessage({ testAdsRemoved });
+  if (adsRemoved) {
+    let totalTestAdsRemoved =
+      parseInt(sessionStorage.getItem("totalTestAdsRemoved")) || 0;
+    totalTestAdsRemoved += adsRemoved;
+    sessionStorage.setItem(
+      "totalTestAdsRemoved",
+      totalTestAdsRemoved.toString()
+    );
+    chrome.runtime.sendMessage({ testAdsRemoved: totalTestAdsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
 function RemoveAdBlock() {
   const funcName = "RemoveAdBlock()";
-  const prevBlocked = adsRemoved;
+  let adsRemoved = 0;
 
   const ads = [
     ...getElementsByClassName(OBSERVE_NODE, ADS_CLASS, "div"),
@@ -88,14 +92,18 @@ function RemoveAdBlock() {
     }
   });
 
-  if (prevBlocked !== adsRemoved) {
-    chrome.runtime.sendMessage({ adsRemoved });
+  if (adsRemoved) {
+    let totalAdsRemoved =
+      parseInt(sessionStorage.getItem("totalAdsRemoved")) || 0;
+    totalAdsRemoved += adsRemoved;
+    sessionStorage.setItem("totalAdsRemoved", totalAdsRemoved.toString());
+    chrome.runtime.sendMessage({ adsRemoved: totalAdsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
 function RemoveAdInPublicBlock() {
   const funcName = "RemoveAdInPublicBlock()";
-  const prevBlocked = adsRemoved;
+  let adsRemoved = 0;
 
   const ads = getElementsByClassName(OBSERVE_NODE, ADS_IN_PUBLIC, "span");
 
@@ -108,8 +116,12 @@ function RemoveAdInPublicBlock() {
     }
   });
 
-  if (prevBlocked !== adsRemoved) {
-    chrome.runtime.sendMessage({ adsRemoved });
+  if (adsRemoved) {
+    let totalAdsRemoved =
+      parseInt(sessionStorage.getItem("totalAdsRemoved")) || 0;
+    totalAdsRemoved += adsRemoved;
+    sessionStorage.setItem("totalAdsRemoved", totalAdsRemoved.toString());
+    chrome.runtime.sendMessage({ adsRemoved: totalAdsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
