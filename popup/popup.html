@@ -14,10 +14,14 @@
             width: 15rem;
         }
 
-        button {
+        .btn {
             width: 100%;
             padding: 0.5rem;
             font-size: 1rem;
+        }
+
+        .reset-btn {
+            font-size: 0.5rem;
         }
 
         .btn__enabled {
@@ -48,9 +52,11 @@
             padding-bottom: 0.5rem;
             text-align: center;
         }
+
         .ads-removed-column:first-child {
             flex: 3;
         }
+
         .ads-removed-column:last-child {
             flex: 1;
             font-weight: bolder;
@@ -60,17 +66,18 @@
 
 <body>
     <p>Очищает ленту ВК от рекламы и тупых комментов</p>
-    <button id="toggle-btn" class="btn__disabled">Error :( </button>
+    <button id="toggle-btn" class="btn btn__disabled">Error :( </button>
     <div class="ads-removed-block">
         <div class="ads-removed">
             <div class="ads-removed-column">ads posts removed:</div>
             <div id="ads-removed-counter" class="ads-removed-column">0</div>
         </div>
         <div class="ads-removed">
-            <div class="ads-removed-column">(test) posts removed:</div>
+            <div class="ads-removed-column">(ads) posts removed:</div>
             <div id="test-ads-removed-counter" class="ads-removed-column">0</div>
         </div>
     </div>
+    <button id="reset-btn" class="reset-btn">0</button>
     <script type="module" src="./popup.js"></script>
 </body>
 

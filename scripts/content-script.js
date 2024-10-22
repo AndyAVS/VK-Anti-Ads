@@ -4,6 +4,7 @@
 //-----------------------------------------------------------------------------
 const CONTENT_EXTENSION_NAME = "VK Anti Ads";
 const CONTENT_STORAGE_KEY = "extensionEnabled";
+//-----------------------------------------------------------------------------
 const OBSERVE_NODE = document;
 const ADS_TEXT = "Реклама";
 const REPLIES_TEXT = "replies";
@@ -11,6 +12,27 @@ const ADS_CLASS = "PostHeaderSubtitle--layoutWithWarning";
 const ADS_CLASS_CONTAINS = "_ads_";
 const MARKET_CLASS_CONTAINS = "MarketItems";
 const ADS_IN_PUBLIC = "PostHeaderSubtitle__item";
+//-----------------------------------------------------------------------------
+
+/**
+ * @typedef {Object} Counters
+ * @property {number} totalAdsRemoved
+ * @property {number} totalTestAdsRemoved
+ */
+
+/** @type {Counters} */
+const adsCounter = {
+  totalAdsRemoved: 0,
+  totalTestAdsRemoved: 0,
+};
+
+console.log(`${CONTENT_EXTENSION_NAME} content-script running`);
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "resetButtonClicked") {
+    console.log(`${CONTENT_EXTENSION_NAME} content-script resetButtonClicked`);
+  }
+});
 //-----------------------------------------------------------------------------
 chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
   if (result.extensionEnabled) {
@@ -58,14 +80,13 @@ function TestRemoveBlock() {
   });
 
   if (adsRemoved) {
-    let totalTestAdsRemoved =
-      parseInt(sessionStorage.getItem("totalTestAdsRemoved")) || 0;
-    totalTestAdsRemoved += adsRemoved;
-    sessionStorage.setItem(
-      "totalTestAdsRemoved",
-      totalTestAdsRemoved.toString()
+    adsCounter.totalTestAdsRemoved += adsRemoved;
+    console.log(
+      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsCounter)}`
     );
-    chrome.runtime.sendMessage({ testAdsRemoved: totalTestAdsRemoved });
+    chrome.runtime.sendMessage({
+      testAdsRemoved: adsCounter.totalTestAdsRemoved,
+    });
   }
 }
 //-----------------------------------------------------------------------------
@@ -93,11 +114,11 @@ function RemoveAdBlock() {
   });
 
   if (adsRemoved) {
-    let totalAdsRemoved =
-      parseInt(sessionStorage.getItem("totalAdsRemoved")) || 0;
-    totalAdsRemoved += adsRemoved;
-    sessionStorage.setItem("totalAdsRemoved", totalAdsRemoved.toString());
-    chrome.runtime.sendMessage({ adsRemoved: totalAdsRemoved });
+    adsCounter.totalAdsRemoved += adsRemoved;
+    console.log(
+      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsCounter)}`
+    );
+    chrome.runtime.sendMessage({ adsRemoved: adsCounter.totalAdsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
@@ -117,11 +138,11 @@ function RemoveAdInPublicBlock() {
   });
 
   if (adsRemoved) {
-    let totalAdsRemoved =
-      parseInt(sessionStorage.getItem("totalAdsRemoved")) || 0;
-    totalAdsRemoved += adsRemoved;
-    sessionStorage.setItem("totalAdsRemoved", totalAdsRemoved.toString());
-    chrome.runtime.sendMessage({ adsRemoved: totalAdsRemoved });
+    adsCounter.totalAdsRemoved += adsRemoved;
+    console.log(
+      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsCounter)}`
+    );
+    chrome.runtime.sendMessage({ adsRemoved: adsCounter.totalAdsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
@@ -185,3 +206,6 @@ function getElementsContainingClassName(startNode, classText, tag) {
       )
   );
 }
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

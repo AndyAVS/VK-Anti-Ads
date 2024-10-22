@@ -1,20 +1,21 @@
 {
   "manifest_version": 3,
   "name": "VK Anti Ads & Comments ",
-  "version": "0.2.0.605",
+  "version": "0.2.0.614",
   "description": "Очищает ленту ВК от рекламы и тупых комментов",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "tabs", "scripting"],
+  "host_permissions": ["https://vk.com/*feed*"],
   "action": {
     "default_popup": "popup/popup.html"
   },
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "background/background.js",
     "type": "module"
   },
   "content_scripts": [
     {
       "js": ["scripts/content-script.js"],
-      "matches": ["https://vk.com/*"],
+      "matches": ["https://vk.com/*feed*"],
       "run_at": "document_idle",
       "type": "module"
     }
