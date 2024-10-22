@@ -39,7 +39,7 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
 });
 //-----------------------------------------------------------------------------
 function TestRemoveBlock() {
-  const funcName = "RemoveBlock()";
+  const funcName = "TestRemoveBlock()";
   let adsRemoved = 0;
 
   let ads = getElementsContainingTextContent(OBSERVE_NODE, ADS_TEXT, "span");
@@ -49,7 +49,7 @@ function TestRemoveBlock() {
     if (adBlock) {
       adBlock.remove();
       console.log(
-        `${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 1)`
+        `${CONTENT_EXTENSION_NAME} ${funcName} (test condition 1)`
       );
       adsRemoved++;
     }
@@ -62,7 +62,7 @@ function TestRemoveBlock() {
     if (adBlock) {
       adBlock.remove();
       console.log(
-        `${CONTENT_EXTENSION_NAME}: removed vk ad post test func (test condition 2)`
+        `${CONTENT_EXTENSION_NAME} ${funcName} (test condition 2)`
       );
       adsRemoved++;
     }
@@ -70,7 +70,7 @@ function TestRemoveBlock() {
 
   if (adsRemoved) {
     console.log(
-      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsRemoved)}`
+      `${CONTENT_EXTENSION_NAME} ${funcName} ${adsRemoved}`
     );
     chrome.runtime.sendMessage({testAdsRemoved: adsRemoved });
   }
@@ -101,7 +101,7 @@ function RemoveAdBlock() {
 
   if (adsRemoved) {
     console.log(
-      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsRemoved)}`
+      `${CONTENT_EXTENSION_NAME} ${funcName} ${adsRemoved}`
     );
     chrome.runtime.sendMessage({ adsRemoved });
   }
@@ -123,9 +123,7 @@ function RemoveAdInPublicBlock() {
   });
 
   if (adsRemoved) {
-    console.log(
-      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsRemoved)}`
-    );
+    console.log(`${CONTENT_EXTENSION_NAME} ${funcName} ${adsRemoved}`);
     chrome.runtime.sendMessage({ adsRemoved });
   }
 }
