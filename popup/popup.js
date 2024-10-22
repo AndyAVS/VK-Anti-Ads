@@ -4,10 +4,11 @@
 //-----------------------------------------------------------------------------
 const POPUP_EXT_STORAGE_KEY = "extensionEnabled";
 const BUTTON_ID = "toggle-btn";
+const RESET_BUTTON_ID = "reset-btn";
 const ENABLED_CAPTION = "Включен";
 const DISABLED_CAPTION = "Отключен";
-const ENABLED_CLASS = "btn__enabled";
-const DISABLED_CLASS = "btn__disabled";
+const ENABLED_CLASS = "btn btn__enabled";
+const DISABLED_CLASS = "btn btn__disabled";
 const ADS_COUNTER_ID = "ads-removed-counter";
 const TEST_ADS_COUNTER_ID = "test-ads-removed-counter";
 
@@ -54,7 +55,6 @@ const SetElementTextContent = (elementId, data) => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
- 
   const toggleButton = document.getElementById(BUTTON_ID);
 
   if (toggleButton == null) {
@@ -65,9 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     toggleButton.addEventListener("click", () => {
-
       chrome.storage.local.get(POPUP_EXT_STORAGE_KEY, (result) => {
-        
         const newState = !result.extensionEnabled;
 
         chrome.storage.local.set({ extensionEnabled: newState }, () => {
@@ -77,6 +75,13 @@ document.addEventListener("DOMContentLoaded", () => {
           chrome.runtime.sendMessage({ enabled: newState });
         });
       });
+    });
+  }
+
+  const resetButton = document.getElementById(RESET_BUTTON_ID);
+  if (resetButton) {
+    resetButton.addEventListener("click", () => {
+      chrome.runtime.sendMessage({ type: "resetButtonClicked" });
     });
   }
 

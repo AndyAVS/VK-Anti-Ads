@@ -3,5 +3,5 @@
     "module": "ES2015",
     "target": "ES6"
   },
-  "include": ["scripts/**/*", "popup/popup.js", "background.js"]
+  "include": ["scripts/**/*", "popup/popup.js", "background/background.js"]
 }
