@@ -2,12 +2,25 @@
 // @ts-check
 "use strict";
 
+const EXTENSION_NAME = "(VK Anti Ads & Comments)";
+
 let totalAdsRemoved = 0;
 let totalTestAdsRemoved = 0;
 
-chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
-  const EXTENSION_NAME = "(VK Anti Ads & Comments)";
+console.log(`start background ${EXTENSION_NAME}`);
 
+chrome.storage.session.get(
+  ["totalAdsRemoved", "totalTestAdsRemoved"],
+  (result) => {
+    totalAdsRemoved = parseInt(result.totalAdsRemoved) || 0;
+    totalTestAdsRemoved = parseInt(result.totalTestAdsRemoved) || 0;
+    console.log(
+      `get background ${EXTENSION_NAME} ${totalAdsRemoved} ${totalTestAdsRemoved}`
+    );
+  }
+);
+
+chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
   if (message.enabled !== undefined) {
     if (message.enabled) {
       console.log(`${EXTENSION_NAME} включен`);
@@ -20,37 +33,25 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     console.log(
       `got message -> ads removed in ${EXTENSION_NAME}: ${message.adsRemoved}`
     );
-    totalAdsRemoved = message.adsRemoved;
+    totalAdsRemoved += message.adsRemoved;
+    chrome.storage.session.set({ totalAdsRemoved });
   }
 
   if (message.testAdsRemoved !== undefined) {
     console.log(
       `got message -> test ads removed in ${EXTENSION_NAME}: ${message.testAdsRemoved}`
     );
-    totalTestAdsRemoved = message.testAdsRemoved;
+    totalTestAdsRemoved += message.testAdsRemoved;
+    chrome.storage.session.set({ totalTestAdsRemoved });
   }
 
-  /** в content-script сообщение через активную вкладку */
   if (message.type === "resetButtonClicked") {
     console.log(`got message -> resetButtonClicked in ${EXTENSION_NAME}`);
-
-    // chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    //   const activeTab = tabs[0];
-    //   if (activeTab) {
-    //     try {
-    //       chrome.tabs.sendMessage(activeTab.id, { type: "resetButtonClicked" }
-    //         ,(response) => {
-    //         if (chrome.runtime.lastError) {
-    //           throw new Error(chrome.runtime.lastError.message);
-    //         }
-    //       }
-    //     );
-    //     } catch (e) {
-    //       /** я знаю, что это плохо */
-    //       console.warn("Ошибка отправки сообщения:", e.message);
-    //     }
-    //   }
-    // });
+    totalAdsRemoved = 0;
+    totalTestAdsRemoved = 0;
+    chrome.storage.session.set({ totalAdsRemoved, totalTestAdsRemoved });
+    chrome.runtime.sendMessage({ testAdsRemoved: 0 });
+    chrome.runtime.sendMessage({ adsRemoved: 0 });
   }
 });
 
@@ -66,6 +67,13 @@ chrome.runtime.onConnect.addListener((port) => {
     }
   });
 });
+
+// chrome.runtime.onSuspend.addListener(() => {
+//   console.log("Service worker будет остановлен. Сохраняем данные...");
+//   chrome.storage.session.set({ totalAdsRemoved });
+//   chrome.storage.session.set({ totalTestAdsRemoved });
+//   console.log("Временные данные сохранены.");
+// });
 
 // chrome.runtime.onInstalled.addListener(async () => {
 //   for (const cs of chrome.runtime.getManifest().content_scripts) {

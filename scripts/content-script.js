@@ -14,18 +14,6 @@ const MARKET_CLASS_CONTAINS = "MarketItems";
 const ADS_IN_PUBLIC = "PostHeaderSubtitle__item";
 //-----------------------------------------------------------------------------
 
-/**
- * @typedef {Object} Counters
- * @property {number} totalAdsRemoved
- * @property {number} totalTestAdsRemoved
- */
-
-/** @type {Counters} */
-const adsCounter = {
-  totalAdsRemoved: 0,
-  totalTestAdsRemoved: 0,
-};
-
 console.log(`${CONTENT_EXTENSION_NAME} content-script running`);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -43,6 +31,7 @@ chrome.storage.local.get(CONTENT_STORAGE_KEY, (result) => {
       RemoveAdBlock();
       RemoveAdInPublicBlock();
       RemoveComments();
+
     }).observe(OBSERVE_NODE, { subtree: true, childList: true });
   } else {
     console.log(`${CONTENT_EXTENSION_NAME} запущено в выключенном состоянии`);
@@ -80,13 +69,10 @@ function TestRemoveBlock() {
   });
 
   if (adsRemoved) {
-    adsCounter.totalTestAdsRemoved += adsRemoved;
     console.log(
-      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsCounter)}`
+      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsRemoved)}`
     );
-    chrome.runtime.sendMessage({
-      testAdsRemoved: adsCounter.totalTestAdsRemoved,
-    });
+    chrome.runtime.sendMessage({testAdsRemoved: adsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
@@ -114,11 +100,10 @@ function RemoveAdBlock() {
   });
 
   if (adsRemoved) {
-    adsCounter.totalAdsRemoved += adsRemoved;
     console.log(
-      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsCounter)}`
+      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsRemoved)}`
     );
-    chrome.runtime.sendMessage({ adsRemoved: adsCounter.totalAdsRemoved });
+    chrome.runtime.sendMessage({ adsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
@@ -138,11 +123,10 @@ function RemoveAdInPublicBlock() {
   });
 
   if (adsRemoved) {
-    adsCounter.totalAdsRemoved += adsRemoved;
     console.log(
-      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsCounter)}`
+      `${CONTENT_EXTENSION_NAME} content-script ${JSON.stringify(adsRemoved)}`
     );
-    chrome.runtime.sendMessage({ adsRemoved: adsCounter.totalAdsRemoved });
+    chrome.runtime.sendMessage({ adsRemoved });
   }
 }
 //-----------------------------------------------------------------------------
