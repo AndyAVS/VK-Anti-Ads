@@ -57,21 +57,43 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     isUpdated = true;
   }
 
-  if (isUpdated || message.type === "GET_POPUP_DATA") {
-    chrome.runtime
-      .sendMessage({
-        type: "POPUP_DATA",
-        data: totalAdsRemoved,
-        test: totalTestAdsRemoved,
-      })
-      .then((res) => {
-        console.log("POPUP_DATA message sent");
-      })
-      .catch((e) => {
-        console.warn(e.message);
-      });
-    isUpdated = false;
+  if (message.type === "GET_POPUP_DATA") {
+    chrome.storage.session.get(
+      ["totalAdsRemoved", "totalTestAdsRemoved"],
+      (result) => {
+        const ads = parseInt(result.totalAdsRemoved) || 0;
+        const test = parseInt(result.totalTestAdsRemoved) || 0;
+        chrome.runtime
+          .sendMessage({
+            type: "POPUP_DATA",
+            data: ads,
+            test: test,
+          })
+          .then((res) => {
+            console.log("POPUP_DATA message sent");
+          })
+          .catch((e) => {
+            console.warn(e.message);
+          });
+      }
+    );
   }
+
+  // if (isUpdated || message.type === "GET_POPUP_DATA") {
+  //   chrome.runtime
+  //     .sendMessage({
+  //       type: "POPUP_DATA",
+  //       data: totalAdsRemoved,
+  //       test: totalTestAdsRemoved,
+  //     })
+  //     .then((res) => {
+  //       console.log("POPUP_DATA message sent");
+  //     })
+  //     .catch((e) => {
+  //       console.warn(e.message);
+  //     });
+  //   isUpdated = false;
+  // }
 });
 
 // chrome.runtime.onSuspend.addListener(() => {
