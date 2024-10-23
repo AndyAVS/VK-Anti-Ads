@@ -85,29 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /**
-   * ловим из content-script, если открыт popup и было срабатывание
-   * чтобы изменилось на лету
-   * возможно лишнее
-   */
-  chrome.runtime.onMessage.addListener((message) => {
-    if (message.adsRemoved !== undefined) {
-      SetElementTextContent(ADS_COUNTER_ID, message.adsRemoved);
-    }
-    if (message.testAdsRemoved !== undefined) {
-      SetElementTextContent(TEST_ADS_COUNTER_ID, message.testAdsRemoved);
-    }
-  });
+  chrome.runtime.sendMessage({ type: "GET_POPUP_DATA" })
+    .then((res) => {
+      console.log("POPUP_DATA request sent");
+    })
+    .catch((e) => {
+      console.warn(e.message);
+    });
 
-  /**
-   * при открытии popup спрашиваем у background
-   * через port chrome
-   */
-  const port = chrome.runtime.connect({ name: "popup" });
-
-  port.postMessage({ type: "GET_POPUP_DATA" });
-
-  port.onMessage.addListener(
+  chrome.runtime.onMessage.addListener(
     /** @param { PopupMessage } message*/ (message) => {
       if (message.type === "POPUP_DATA") {
         SetElementTextContent(ADS_COUNTER_ID, message.data);
@@ -115,4 +101,5 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   );
+
 });
