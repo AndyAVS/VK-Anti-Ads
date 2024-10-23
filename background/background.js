@@ -21,6 +21,8 @@ chrome.storage.session.get(
 );
 
 chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+  let isUpdated = false;
+
   if (message.enabled !== undefined) {
     if (message.enabled) {
       console.log(`${EXTENSION_NAME} включен`);
@@ -35,6 +37,7 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     );
     totalAdsRemoved += message.adsRemoved;
     chrome.storage.session.set({ totalAdsRemoved });
+    isUpdated = true;
   }
 
   if (message.testAdsRemoved !== undefined) {
@@ -43,6 +46,7 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     );
     totalTestAdsRemoved += message.testAdsRemoved;
     chrome.storage.session.set({ totalTestAdsRemoved });
+    isUpdated = true;
   }
 
   if (message.type === "resetButtonClicked") {
@@ -50,22 +54,24 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     totalAdsRemoved = 0;
     totalTestAdsRemoved = 0;
     chrome.storage.session.set({ totalAdsRemoved, totalTestAdsRemoved });
-    chrome.runtime.sendMessage({ testAdsRemoved: 0 });
-    chrome.runtime.sendMessage({ adsRemoved: 0 });
+    isUpdated = true;
   }
-});
 
-/** popup просит счётчики через порт */
-chrome.runtime.onConnect.addListener((port) => {
-  port.onMessage.addListener((popupMessage) => {
-    if (port.name === "popup" && popupMessage.type === "GET_POPUP_DATA") {
-      port.postMessage({
+  if (isUpdated || message.type === "GET_POPUP_DATA") {
+    chrome.runtime
+      .sendMessage({
         type: "POPUP_DATA",
         data: totalAdsRemoved,
         test: totalTestAdsRemoved,
+      })
+      .then((res) => {
+        console.log("POPUP_DATA message sent");
+      })
+      .catch((e) => {
+        console.warn(e.message);
       });
-    }
-  });
+    isUpdated = false;
+  }
 });
 
 // chrome.runtime.onSuspend.addListener(() => {
