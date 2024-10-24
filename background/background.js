@@ -70,11 +70,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       (result) => {
         const ads = parseInt(result.totalAdsRemoved) || 0;
         const test = parseInt(result.totalTestAdsRemoved) || 0;
-        sendResponse({
+        console.log(`in response ${ads} ${test}`);
+        chrome.runtime.sendMessage({
           type: "POPUP_DATA",
           data: ads,
           test: test,
-        });
+        })
+        .catch((e) => console.warn('Error send POPUP_DATA '+ e.message));
       }
     );
   }

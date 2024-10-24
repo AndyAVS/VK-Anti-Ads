@@ -54,6 +54,16 @@ const SetElementTextContent = (elementId, data) => {
   }
 };
 
+chrome.runtime.onMessage.addListener(
+  /** @param { PopupMessage } message*/ (message) => {
+    if (message.type === "POPUP_DATA") {
+      console.log("POPUP_DATA in popup");
+      SetElementTextContent(ADS_COUNTER_ID, message.data);
+      SetElementTextContent(TEST_ADS_COUNTER_ID, message.test);
+    }
+  }
+);
+
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.getElementById(BUTTON_ID);
 
@@ -92,14 +102,4 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((e) => {
       console.warn(e.message);
     });
-
-  chrome.runtime.onMessage.addListener(
-    /** @param { PopupMessage } message*/ (message) => {
-      if (message.type === "POPUP_DATA") {
-        SetElementTextContent(ADS_COUNTER_ID, message.data);
-        SetElementTextContent(TEST_ADS_COUNTER_ID, message.test);
-      }
-    }
-  );
-
 });
