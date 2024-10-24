@@ -15,15 +15,6 @@ function updateBadge(counters) {
   });
 }
 
-// // Увеличиваем счетчик и обновляем бейдж
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.action === 'increment') {
-//     count++;
-//     updateBadge();
-//     sendResponse({ status: 'badge updated' });
-//   }
-// });
-
 chrome.storage.session.get(
   ["totalAdsRemoved", "totalTestAdsRemoved"],
   (result) => {
@@ -35,7 +26,7 @@ chrome.storage.session.get(
   }
 );
 
-chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   let isUpdated = false;
 
   if (message.enabled !== undefined) {
@@ -73,46 +64,25 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
   }
 
   if (message.type === "GET_POPUP_DATA") {
+    console.log(`got message -> GET_POPUP_DATA in ${EXTENSION_NAME}`);
     chrome.storage.session.get(
       ["totalAdsRemoved", "totalTestAdsRemoved"],
       (result) => {
         const ads = parseInt(result.totalAdsRemoved) || 0;
         const test = parseInt(result.totalTestAdsRemoved) || 0;
-        chrome.runtime
-          .sendMessage({
-            type: "POPUP_DATA",
-            data: ads,
-            test: test,
-          })
-          .then((res) => {
-            console.log("POPUP_DATA message sent");
-          })
-          .catch((e) => {
-            console.warn(e.message);
-          });
+        sendResponse({
+          type: "POPUP_DATA",
+          data: ads,
+          test: test,
+        });
       }
     );
   }
 
   if (isUpdated) {
     updateBadge(totalAdsRemoved + totalTestAdsRemoved);
+    isUpdated = false;
   }
-
-  // if (isUpdated || message.type === "GET_POPUP_DATA") {
-  //   chrome.runtime
-  //     .sendMessage({
-  //       type: "POPUP_DATA",
-  //       data: totalAdsRemoved,
-  //       test: totalTestAdsRemoved,
-  //     })
-  //     .then((res) => {
-  //       console.log("POPUP_DATA message sent");
-  //     })
-  //     .catch((e) => {
-  //       console.warn(e.message);
-  //     });
-  //   isUpdated = false;
-  // }
 });
 
 // chrome.runtime.onSuspend.addListener(() => {
@@ -122,10 +92,9 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
 //   console.log("Временные данные сохранены.");
 // });
 
-
 chrome.runtime.onInstalled.addListener(async () => {
-  await chrome.action.setBadgeBackgroundColor({ color: 'gray' });
-  await chrome.action.setBadgeTextColor({ color: 'white' });
+  await chrome.action.setBadgeBackgroundColor({ color: "gray" });
+  await chrome.action.setBadgeTextColor({ color: "white" });
   //updateBadge(0);
 });
 
