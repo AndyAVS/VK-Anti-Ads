@@ -9,6 +9,21 @@ let totalTestAdsRemoved = 0;
 
 console.log(`start background ${EXTENSION_NAME}`);
 
+function updateBadge(counters) {
+  chrome.action.setBadgeText({ text: counters.toString() }).catch((err) => {
+    console.warn(`Error update badge: ${err.message}`);
+  });
+}
+
+// // Увеличиваем счетчик и обновляем бейдж
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.action === 'increment') {
+//     count++;
+//     updateBadge();
+//     sendResponse({ status: 'badge updated' });
+//   }
+// });
+
 chrome.storage.session.get(
   ["totalAdsRemoved", "totalTestAdsRemoved"],
   (result) => {
@@ -79,6 +94,10 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
     );
   }
 
+  if (isUpdated) {
+    updateBadge(totalAdsRemoved + totalTestAdsRemoved);
+  }
+
   // if (isUpdated || message.type === "GET_POPUP_DATA") {
   //   chrome.runtime
   //     .sendMessage({
@@ -102,6 +121,13 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
 //   chrome.storage.session.set({ totalTestAdsRemoved });
 //   console.log("Временные данные сохранены.");
 // });
+
+
+chrome.runtime.onInstalled.addListener(async () => {
+  await chrome.action.setBadgeBackgroundColor({ color: 'gray' });
+  await chrome.action.setBadgeTextColor({ color: 'white' });
+  //updateBadge(0);
+});
 
 // chrome.runtime.onInstalled.addListener(async () => {
 //   for (const cs of chrome.runtime.getManifest().content_scripts) {
